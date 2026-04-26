@@ -18,7 +18,7 @@ const featuredGuides = GUIDES.slice(0, 6);
 
 const schemaOut = jsonLd(organizationSchema(), websiteSchema());
 ---
-<Base title={title} description={description} schema={schemaOut} showStickyBar={true}>
+<Base title={title} description={description} schema={schemaOut} showStickyBar={true} ogSlug="home">
   <section class="bg-gradient-to-b from-[var(--color-mist)] to-[var(--color-paper)] border-b border-[var(--color-line)]">
     <div class="max-w-6xl mx-auto px-4 lg:px-6 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
       <div>

@@ -1,0 +1,130 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import HowTo from '~/components/HowTo.astro';
+import FAQ from '~/components/FAQ.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import AffiliateCard from '~/components/AffiliateCard.astro';
+import { PROGRAMS } from '~/data/programs';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { jsonLd, breadcrumbSchema, articleSchema, governmentServiceSchema, faqSchema, howToSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return PROGRAMS.map((p) => ({ params: { slug: p.slug }, props: { program: p } }));
+}
+
+const { program } = Astro.props;
+const url = `/program/${program.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const state = program.stateSlug ? STATES.find((s) => s.slug === program.stateSlug) : undefined;
+const techs = program.techSlugs.map((s) => TECH.find((t) => t.slug === s)!).filter(Boolean);
+const federal = program.federalLink ? FEDERAL.find((f) => f.slug === program.federalLink) : undefined;
+
+const title = `${program.name}: Amount, Eligibility & How to Claim (2026)`;
+const metaTitle = title.length > 60 ? `${program.shortName}: How to Claim (2026)` : title;
+const description = `${program.description.slice(0, 155)}…`;
+
+const relatedPrograms = PROGRAMS
+  .filter((p) => p.slug !== program.slug)
+  .filter((p) => p.stateSlug === program.stateSlug || p.techSlugs.some((t) => program.techSlugs.includes(t)))
+  .slice(0, 4);
+
+const breadcrumbs = state
+  ? [
+      { name: 'Home', url: '/' },
+      { name: 'Programs', url: '/program/' },
+      { name: state.name, url: `/state/${state.slug}/` },
+      { name: program.shortName, url },
+    ]
+  : [
+      { name: 'Home', url: '/' },
+      { name: 'Programs', url: '/program/' },
+      { name: program.shortName, url },
+    ];
+
+const schema = jsonLd(
+  breadcrumbSchema(breadcrumbs),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: program.updatedAt }),
+  governmentServiceSchema({
+    name: program.name,
+    description: program.description.slice(0, 280),
+    type: program.type,
+    authority: program.authority,
+    state: state?.name,
+    amount: program.amount,
+    expiry: program.expiry,
+    url: program.url,
+  }),
+  faqSchema(program.faq),
+  howToSchema({ name: `How to apply for ${program.shortName}`, steps: program.howToApply }),
+);
+
+const relatedItems = [
+  ...(state ? [{ name: `${state.name} energy rebates`, url: `/state/${state.slug}/`, meta: state.topProgram }] : []),
+  ...techs.map((t) => ({ name: `${t.name} rebates`, url: `/technology/${t.slug}/`, meta: t.federalAmount })),
+  ...(federal ? [{ name: `${federal.code}: ${federal.shortName}`, url: `/federal/${federal.slug}/`, meta: federal.amount }] : []),
+  ...relatedPrograms.map((p) => ({ name: p.name, url: `/program/${p.slug}/`, meta: p.amount })),
+];
+
+const primaryTech = techs[0];
+const partner = primaryTech?.primaryRebatePartner ?? 'modernize';
+---
+<Base title={metaTitle} description={description} schema={schema} lastUpdated={program.updatedAt} showStickyBar={true} ogSlug={`program-${program.slug}`}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="flex items-center gap-2 mb-3 flex-wrap">
+      <span class="text-xs uppercase tracking-wider text-[var(--color-leaf-dark)] font-semibold">{program.type}</span>
+      <span class="text-xs text-[var(--color-ink)]/60">·</span>
+      <span class="text-xs text-[var(--color-ink)]/60">{program.authority}</span>
+      {state && (<>
+        <span class="text-xs text-[var(--color-ink)]/60">·</span>
+        <span class="text-xs text-[var(--color-ink)]/60">{state.name}</span>
+      </>)}
+    </div>
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-3">{program.name}</h1>
+    <p class="text-xl font-display text-[var(--color-leaf-dark)] mb-5">{program.amount}</p>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed">{program.description}</p>
+
+    <TLDR points={[
+      `Amount: ${program.amount}`,
+      `Authority: ${program.authority}${state ? ` (${state.name})` : ''}`,
+      `Type: ${program.type} · Valid ${program.expiry}`,
+    ]} updated={program.updatedAt} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Eligibility</h2>
+    <div class="space-y-3">
+      {program.eligibility.map((e) => (
+        <div class="card">
+          <p class="font-medium mb-1">{e.q}</p>
+          <p class="text-[var(--color-ink)]/80 leading-relaxed">{e.a}</p>
+        </div>
+      ))}
+    </div>
+
+    <HowTo steps={program.howToApply} heading={`How to apply for ${program.shortName}`} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Stacking with other programs</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed">{program.stackingNotes}</p>
+
+    {primaryTech && <AffiliateCard partner={partner} tech={primaryTech.shortName.toLowerCase()} state={state?.name} />}
+
+    <FAQ items={program.faq} />
+
+    <EmailCapture />
+
+    {program.url && (
+      <p class="text-sm text-[var(--color-ink)]/70 mb-8">
+        Official program page: <a href={program.url} target="_blank" rel="noopener" class="text-[var(--color-leaf-dark)] underline break-all">{program.url}</a>
+      </p>
+    )}
+
+    <RelatedLinks heading="Related programs and credits" items={relatedItems} />
+  </article>
+</Base>

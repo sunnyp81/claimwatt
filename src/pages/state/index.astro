@@ -15,7 +15,7 @@ const schema = jsonLd(
   collectionPageSchema({ url, name: 'Energy Rebates by State', description, items }),
 );
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} ogSlug="state-index">
   <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
     <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'States', url }]} />
     <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebates by state</h1>

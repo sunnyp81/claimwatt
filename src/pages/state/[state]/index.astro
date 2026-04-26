@@ -46,7 +46,7 @@ const introParas = [
   `${state.name} climate zone is ${state.climateZone}. Solar potential is rated ${state.solarPotential.toLowerCase()}. Heat pump fit for the climate is ${state.heatPumpFit.toLowerCase()}. Population is ${(state.population / 1000000).toFixed(1)} million. Below: every technology stack mapped to ${state.name}-specific programs.`,
 ];
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true} ogSlug={`state-${state.slug}`}>
   <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
     <Breadcrumbs items={[
       { name: 'Home', url: '/' },

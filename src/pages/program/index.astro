@@ -1,51 +1,101 @@
 ---
 import Base from '~/layouts/Base.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
-import { STATE_TECH } from '~/data/state-tech';
+import { PROGRAMS } from '~/data/programs';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
 import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
 
-const title = 'US Energy Rebate Programs: Federal, State, Utility Directory';
-const description = 'Browse the full directory of US renewable energy rebate programs — federal IRA programs, state energy office rebates, and utility programs by region.';
+const title = `US Energy Rebate Program Directory: ${PROGRAMS.length}+ Federal, State & Utility Programs`;
+const description = `Browse the full directory of US renewable energy rebate programs — ${PROGRAMS.length}+ curated federal, state, and utility programs across solar, heat pump, EV, battery, and geothermal.`;
 const url = '/program/';
 const today = new Date().toISOString().slice(0, 10);
 
-const allPrograms = STATE_TECH.flatMap((st) => st.programs.map((p) => ({ ...p, stateSlug: st.stateSlug, techSlug: st.techSlug })));
-const grouped = new Map<string, typeof allPrograms>();
-for (const p of allPrograms) {
-  const key = p.authority;
-  if (!grouped.has(key)) grouped.set(key, []);
-  grouped.get(key)!.push(p);
-}
-
-const items = Array.from(grouped.keys()).map((authority) => ({ name: authority, url }));
+const items = PROGRAMS.map((p) => ({ name: p.name, url: `/program/${p.slug}/` }));
 const schema = jsonLd(
   breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Programs', url }]),
-  collectionPageSchema({ url, name: 'Rebate Program Directory', description, items }),
+  collectionPageSchema({ url, name: 'US Energy Rebate Program Directory', description, items }),
 );
+
+const groupedByState = new Map<string, typeof PROGRAMS>();
+const nationwide: typeof PROGRAMS = [];
+for (const p of PROGRAMS) {
+  if (p.stateSlug) {
+    if (!groupedByState.has(p.stateSlug)) groupedByState.set(p.stateSlug, []);
+    groupedByState.get(p.stateSlug)!.push(p);
+  } else {
+    nationwide.push(p);
+  }
+}
+
+const groupedByTech = new Map<string, typeof PROGRAMS>();
+for (const p of PROGRAMS) {
+  for (const tech of p.techSlugs) {
+    if (!groupedByTech.has(tech)) groupedByTech.set(tech, []);
+    groupedByTech.get(tech)!.push(p);
+  }
+}
+
+const stateGroups = Array.from(groupedByState.entries())
+  .map(([slug, progs]) => ({ state: STATES.find((s) => s.slug === slug)!, progs }))
+  .sort((a, b) => a.state.name.localeCompare(b.state.name));
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} ogSlug="program-index">
   <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
     <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Programs', url }]} />
-    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebate program directory</h1>
-    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10 max-w-3xl">A growing directory of US energy rebate programs. We are mapping ~3,000 federal, state, and utility programs from DSIRE — currently showing curated programs for our top-12 state×tech combinations. Full DSIRE integration in Wave 3.</p>
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">US energy rebate program directory</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10 max-w-3xl">{PROGRAMS.length} curated federal, state, and utility programs — solar, heat pump, EV, battery, geothermal — with deep stacking guides, eligibility rules, and step-by-step application instructions for each.</p>
 
-    <div class="space-y-6">
-      {Array.from(grouped.entries()).map(([authority, progs]) => (
-        <div class="card">
-          <h2 class="font-display text-lg mb-3">{authority}</h2>
-          <ul class="space-y-2 text-sm">
-            {progs.map((p) => (
-              <li class="flex items-start justify-between gap-3 border-b border-[var(--color-line)] last:border-0 pb-2 last:pb-0">
-                <a href={`/state/${p.stateSlug}/${p.techSlug}/`} class="hover:text-[var(--color-leaf-dark)] flex-1">
-                  <span class="font-medium block">{p.name}</span>
-                  <span class="text-xs text-[var(--color-ink)]/60">{p.type} · {p.expiry || 'Ongoing'}</span>
-                </a>
-                <span class="text-sm font-semibold text-[var(--color-leaf-dark)] whitespace-nowrap">{p.amount}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
+    <section class="mb-12">
+      <h2 class="text-2xl font-display mb-4">Browse by technology</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        {TECH.map((t) => {
+          const count = (groupedByTech.get(t.slug) ?? []).length;
+          return (
+            <a href={`/technology/${t.slug}/`} class="card hover:border-[var(--color-leaf)] hover:bg-[var(--color-mist)] block transition">
+              <h3 class="font-display text-base mb-1">{t.name}</h3>
+              <span class="text-xs text-[var(--color-ink)]/60">{count} programs</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    {stateGroups.map(({ state, progs }) => (
+      <section class="mb-10">
+        <h2 class="text-2xl font-display mb-4">
+          <a href={`/state/${state.slug}/`} class="hover:text-[var(--color-leaf-dark)]">{state.name}</a>
+          <span class="text-sm text-[var(--color-ink)]/60 font-sans font-normal ml-2">{progs.length} program{progs.length !== 1 ? 's' : ''}</span>
+        </h2>
+        <ul class="card space-y-3 p-5">
+          {progs.map((p) => (
+            <li class="flex items-start justify-between gap-4 border-b border-[var(--color-line)] last:border-0 pb-3 last:pb-0">
+              <a href={`/program/${p.slug}/`} class="hover:text-[var(--color-leaf-dark)] flex-1">
+                <span class="font-medium block leading-tight">{p.name}</span>
+                <span class="text-xs text-[var(--color-ink)]/60">{p.type} · {p.authority}</span>
+              </a>
+              <span class="text-sm font-semibold text-[var(--color-leaf-dark)] whitespace-nowrap">{p.amount.split(/[(.]/)[0].trim()}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    {nationwide.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl font-display mb-4">Nationwide programs</h2>
+        <ul class="card space-y-3 p-5">
+          {nationwide.map((p) => (
+            <li class="flex items-start justify-between gap-4 border-b border-[var(--color-line)] last:border-0 pb-3 last:pb-0">
+              <a href={`/program/${p.slug}/`} class="hover:text-[var(--color-leaf-dark)] flex-1">
+                <span class="font-medium block leading-tight">{p.name}</span>
+                <span class="text-xs text-[var(--color-ink)]/60">{p.type} · {p.authority}</span>
+              </a>
+              <span class="text-sm font-semibold text-[var(--color-leaf-dark)] whitespace-nowrap">{p.amount.split(/[(.]/)[0].trim()}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </div>
 </Base>

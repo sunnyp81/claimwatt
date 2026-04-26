@@ -12,7 +12,7 @@ const schema = jsonLd(
   articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
 );
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} ogSlug="about">
   <article class="max-w-3xl mx-auto px-4 lg:px-6 py-12">
     <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'About', url }]} />
     <h1 class="text-4xl md:text-5xl font-display leading-tight mb-5">About ClaimWatt</h1>

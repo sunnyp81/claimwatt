@@ -11,6 +11,7 @@ import { STATE_TECH } from '~/data/state-tech';
 import { STATES } from '~/data/states';
 import { TECH } from '~/data/tech';
 import { FEDERAL } from '~/data/federal';
+import { findProgramSlug } from '~/data/programs';
 import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, collectionPageSchema } from '~/lib/schema';
 
 export function getStaticPaths() {
@@ -66,7 +67,7 @@ const relatedItems = [
   }),
 ];
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true} ogSlug={`state-${state.slug}-${tech.slug}`}>
   <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
     <Breadcrumbs items={[
       { name: 'Home', url: '/' },
@@ -80,7 +81,10 @@ const relatedItems = [
 
     <TLDR points={st.tldr} updated={today} />
 
-    <ProgramTable programs={st.programs.map((p) => ({ ...p, href: undefined }))} heading={`${state.name} ${tech.shortName.toLowerCase()} programs available`} />
+    <ProgramTable programs={st.programs.map((p) => {
+      const slug = findProgramSlug(p.name, state.slug);
+      return { ...p, href: slug ? `/program/${slug}/` : undefined };
+    })} heading={`${state.name} ${tech.shortName.toLowerCase()} programs available`} />
 
     <AffiliateCard partner={tech.primaryRebatePartner} tech={tech.shortName.toLowerCase()} state={state.name} />
 

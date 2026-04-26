@@ -40,7 +40,7 @@ const relatedItems = [
   ...otherFederal.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount })),
 ];
 ---
-<Base title={metaTitle} description={description} schema={schema} lastUpdated={today}>
+<Base title={metaTitle} description={description} schema={schema} lastUpdated={today} ogSlug={`federal-${credit.slug}`}>
   <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
     <Breadcrumbs items={[
       { name: 'Home', url: '/' },

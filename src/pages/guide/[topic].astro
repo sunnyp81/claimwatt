@@ -36,7 +36,7 @@ const relatedItems = [
   ...relatedGuides.map((g) => ({ name: g.title, url: `/guide/${g.slug}/`, meta: g.category })),
 ];
 ---
-<Base title={guide.metaTitle} description={description} schema={schema} lastUpdated={today}>
+<Base title={guide.metaTitle} description={description} schema={schema} lastUpdated={today} ogSlug={`guide-${guide.slug}`}>
   <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
     <Breadcrumbs items={[
       { name: 'Home', url: '/' },

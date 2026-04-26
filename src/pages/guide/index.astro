@@ -18,7 +18,7 @@ const schema = jsonLd(
   collectionPageSchema({ url, name: 'ClaimWatt Guides', description, items }),
 );
 ---
-<Base title={title} description={description} schema={schema} lastUpdated={today}>
+<Base title={title} description={description} schema={schema} lastUpdated={today} ogSlug="guide-index">
   <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
     <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Guides', url }]} />
     <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebate guides</h1>

@@ -1,0 +1,112 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import FAQ from '~/components/FAQ.astro';
+import AffiliateCard from '~/components/AffiliateCard.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import { CITY_TECH } from '~/data/cities';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { STATE_TECH } from '~/data/state-tech';
+import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, collectionPageSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return CITY_TECH.map((ct) => ({
+    params: { state: ct.stateSlug, city: ct.citySlug, tech: ct.techSlug },
+    props: { ct },
+  }));
+}
+
+const { ct } = Astro.props;
+const state = STATES.find((s) => s.slug === ct.stateSlug)!;
+const tech = TECH.find((t) => t.slug === ct.techSlug)!;
+const federalCredit = FEDERAL.find((f) => f.slug === tech.federalCreditSlug)!;
+const stateTechParent = STATE_TECH.find((st) => st.stateSlug === ct.stateSlug && st.techSlug === ct.techSlug);
+
+const url = `/state/${state.slug}/${ct.citySlug}/${tech.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const title = `${tech.shortName} Rebates in ${ct.cityName}, ${state.name} (2026): Programs & How to Claim`;
+const description = `${ct.cityIntro.slice(0, 155)}…`;
+
+const neighboringCities = CITY_TECH
+  .filter((other) => other.stateSlug === ct.stateSlug && other.citySlug !== ct.citySlug && other.techSlug === ct.techSlug)
+  .slice(0, 4);
+
+const otherTechSameCity = CITY_TECH
+  .filter((other) => other.citySlug === ct.citySlug && other.techSlug !== ct.techSlug)
+  .slice(0, 3);
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'States', url: '/state/' },
+  { name: state.name, url: `/state/${state.slug}/` },
+  ...(stateTechParent ? [{ name: `${tech.shortName} rebates`, url: `/state/${state.slug}/${tech.slug}/` }] : []),
+  { name: `${ct.cityName} ${tech.shortName.toLowerCase()}`, url },
+];
+
+const schema = jsonLd(
+  breadcrumbSchema(breadcrumbs),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+  faqSchema(ct.localFaq),
+  collectionPageSchema({
+    url,
+    name: title,
+    description,
+    items: ct.localPrograms.map((p) => ({ name: p, url: `/state/${state.slug}/${tech.slug}/` })),
+  }),
+);
+
+const relatedItems = [
+  ...(stateTechParent ? [{ name: `${state.name} ${tech.shortName.toLowerCase()} rebates (statewide)`, url: `/state/${state.slug}/${tech.slug}/`, meta: stateTechParent.topProgram }] : []),
+  ...neighboringCities.map((nc) => ({ name: `${nc.cityName} ${tech.shortName.toLowerCase()}`, url: `/state/${nc.stateSlug}/${nc.citySlug}/${nc.techSlug}/`, meta: nc.utility })),
+  ...otherTechSameCity.map((oc) => {
+    const ot = TECH.find((t) => t.slug === oc.techSlug)!;
+    return { name: `${oc.cityName} ${ot.shortName.toLowerCase()}`, url: `/state/${oc.stateSlug}/${oc.citySlug}/${oc.techSlug}/`, meta: oc.utility };
+  }),
+  { name: `${federalCredit.code}: ${federalCredit.shortName}`, url: `/federal/${federalCredit.slug}/`, meta: federalCredit.amount },
+];
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true} ogSlug={`state-${state.slug}-${ct.citySlug}-${tech.slug}`}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-3">
+      {tech.shortName} Rebates in {ct.cityName}, {state.name} (2026)
+    </h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-3">{ct.cityIntro}</p>
+
+    <TLDR points={[
+      `Local utility: ${ct.utility}`,
+      `Population: ${ct.population.toLocaleString()} (${ct.county})`,
+      `Solar/climate: ${ct.insolationOrClimate}`,
+    ]} updated={today} />
+
+    <h2 class="text-2xl font-display mt-10 mb-4">{ct.cityName} {tech.shortName.toLowerCase()} programs available</h2>
+    <ul class="card list-disc list-inside space-y-2 text-[var(--color-ink)]/85">
+      {ct.localPrograms.map((p) => (<li>{p}</li>))}
+    </ul>
+    {stateTechParent && (
+      <p class="text-sm text-[var(--color-ink)]/70 mt-3">
+        Full program details, dollar amounts, and stacking math: <a href={`/state/${state.slug}/${tech.slug}/`} class="text-[var(--color-leaf-dark)] underline">{state.name} {tech.shortName.toLowerCase()} rebates</a>.
+      </p>
+    )}
+
+    <AffiliateCard partner={tech.primaryRebatePartner} tech={tech.shortName.toLowerCase()} state={ct.cityName} />
+
+    <FAQ items={ct.localFaq} heading={`${ct.cityName}-specific FAQ`} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Federal pathway</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">
+      The federal {federalCredit.code} {federalCredit.shortName} ({federalCredit.amount}) applies to {ct.cityName} {tech.shortName.toLowerCase()} installations regardless of city or state.
+      See the <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a> for filing instructions and forms.
+    </p>
+
+    <EmailCapture />
+
+    <RelatedLinks heading={`Related ${state.name} cities and programs`} items={relatedItems} />
+  </article>
+</Base>
