@@ -1,0 +1,105 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { STATE_TECH } from '~/data/state-tech';
+import { jsonLd, breadcrumbSchema, collectionPageSchema, articleSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return STATES.map((s) => ({
+    params: { state: s.slug },
+    props: { state: s },
+  }));
+}
+
+const { state } = Astro.props;
+const url = `/state/${state.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const title = `${state.name} Energy Rebates 2026: Solar, Heat Pump, EV, Battery`;
+const description = `Every renewable energy rebate, tax credit, and incentive in ${state.name} for 2026 — solar, heat pump, EV, battery, geothermal — federal + state + ${state.topUtility} utility programs stacked.`;
+
+const techCovered = TECH.map((t) => ({
+  tech: t,
+  hasDeepPage: STATE_TECH.some((st) => st.stateSlug === state.slug && st.techSlug === t.slug),
+}));
+
+const popularStates = STATES.filter((s) => s.slug !== state.slug).slice(0, 6);
+
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'States', url: '/state/' }, { name: state.name, url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+  collectionPageSchema({
+    url,
+    name: `${state.name} Energy Rebates 2026`,
+    description,
+    items: TECH.map((t) => ({ name: `${state.name} ${t.shortName} rebates`, url: `/state/${state.slug}/${t.slug}/` })),
+  }),
+);
+
+const introParas = [
+  `${state.name} homeowners installing solar, heat pumps, EVs, batteries, or geothermal in 2026 stack federal IRS credits with ${state.name === 'Alaska' || state.name === 'Wyoming' ? 'limited' : 'meaningful'} state-level programs and utility rebates from ${state.topUtility} and others. The federal 25D credit (30% uncapped on solar, batteries, geothermal) and 25C credit (30% up to $2,000/year on heat pumps) apply nationwide. ${state.topProgram} is the headline state-level program.`,
+  `${state.name} climate zone is ${state.climateZone}. Solar potential is rated ${state.solarPotential.toLowerCase()}. Heat pump fit for the climate is ${state.heatPumpFit.toLowerCase()}. Population is ${(state.population / 1000000).toFixed(1)} million. Below: every technology stack mapped to ${state.name}-specific programs.`,
+];
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true}>
+  <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[
+      { name: 'Home', url: '/' },
+      { name: 'States', url: '/state/' },
+      { name: state.name, url },
+    ]} />
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-5">{state.name} energy rebates and tax credits (2026)</h1>
+    {introParas.map((p) => (<p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-4">{p}</p>))}
+
+    <section class="grid md:grid-cols-2 gap-4 my-10">
+      <div class="card">
+        <h2 class="font-display text-lg mb-3">{state.name} at a glance</h2>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between border-b border-[var(--color-line)] pb-2"><dt class="text-[var(--color-ink)]/70">Top utility</dt><dd class="font-medium">{state.topUtility}</dd></div>
+          <div class="flex justify-between border-b border-[var(--color-line)] pb-2"><dt class="text-[var(--color-ink)]/70">Climate zone</dt><dd class="font-medium">{state.climateZone}</dd></div>
+          <div class="flex justify-between border-b border-[var(--color-line)] pb-2"><dt class="text-[var(--color-ink)]/70">Solar potential</dt><dd class="font-medium">{state.solarPotential}</dd></div>
+          <div class="flex justify-between border-b border-[var(--color-line)] pb-2"><dt class="text-[var(--color-ink)]/70">Heat pump fit</dt><dd class="font-medium">{state.heatPumpFit}</dd></div>
+          <div class="flex justify-between"><dt class="text-[var(--color-ink)]/70">Population</dt><dd class="font-medium">{(state.population / 1000000).toFixed(1)}M</dd></div>
+        </dl>
+      </div>
+      <div class="card">
+        <h2 class="font-display text-lg mb-3">Top federal credit pathways</h2>
+        <ul class="space-y-2 text-sm">
+          {FEDERAL.filter((f) => ['25C','25D','30D','HEEHRA'].includes(f.code)).map((f) => (
+            <li><a href={`/federal/${f.slug}/`} class="hover:text-[var(--color-leaf-dark)] flex justify-between gap-2">
+              <span><span class="font-mono text-xs bg-[var(--color-mist)] px-1.5 py-0.5 rounded mr-1">{f.code}</span>{f.shortName}</span>
+              <span class="text-[var(--color-ink)]/60 whitespace-nowrap">{f.amount.split(' ')[0]}…</span>
+            </a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="my-10">
+      <h2 class="text-2xl font-display mb-4">{state.name} rebates by technology</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {techCovered.map(({ tech, hasDeepPage }) => (
+          <a href={hasDeepPage ? `/state/${state.slug}/${tech.slug}/` : `/technology/${tech.slug}/`} class="card hover:border-[var(--color-leaf)] hover:bg-[var(--color-mist)] block transition">
+            <h3 class="font-display text-lg mb-1">{tech.name}</h3>
+            <p class="text-sm text-[var(--color-ink)]/70 mb-1">{tech.federalAmount}</p>
+            {hasDeepPage ? (
+              <span class="text-xs text-[var(--color-leaf-dark)] font-medium">{state.name} {tech.shortName} stack →</span>
+            ) : (
+              <span class="text-xs text-[var(--color-ink)]/60">National {tech.shortName} guide →</span>
+            )}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <EmailCapture />
+
+    <RelatedLinks heading="Other states" items={popularStates.map((s) => ({ name: `${s.name} energy rebates`, url: `/state/${s.slug}/` }))} />
+  </div>
+</Base>

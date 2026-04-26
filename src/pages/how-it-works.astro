@@ -1,0 +1,58 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import FAQ from '~/components/FAQ.astro';
+import { jsonLd, breadcrumbSchema, articleSchema } from '~/lib/schema';
+
+const title = 'How ClaimWatt Works: Federal + State + Utility Rebate Stacking Explained';
+const description = 'How federal energy tax credits, IRA rebates, state programs, and utility rebates stack — the actual math, the order of operations, and where the IRS draws the line.';
+const url = '/how-it-works/';
+
+const today = new Date().toISOString().slice(0, 10);
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'How it works', url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+);
+
+const faq = [
+  { q: 'Are tax credits the same as rebates?', a: 'No. Rebates are cash off the price (immediate or check). Tax credits reduce your tax bill at filing. Most homeowners stack both.' },
+  { q: 'Which credits stack and which cancel?', a: '25C and HEEHRA do NOT stack on the same item — pick the higher (HEEHRA wins for income-qualified, 25C wins for higher-income). 30D and commercial 45W do NOT stack on the same vehicle. Everything else generally stacks if you have qualifying property in each category.' },
+  { q: 'Does the state rebate reduce my federal credit?', a: 'Yes. State and utility cash rebates reduce the federal cost basis, which reduces the dollar value of the federal credit. State tax credits do NOT reduce federal basis.' },
+  { q: 'Does ClaimWatt sell installation services?', a: 'No. We are an independent rebate research site. Some links to installer partners (Modernize, Networx, EnergySage) are affiliate-paid — clearly labeled — and only appear where they add value to the reader.' },
+];
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'How it works', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-5">How ClaimWatt works</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10">ClaimWatt maps every US federal, state, county, city, and utility renewable-energy incentive — solar, heat pump, EV, battery, geothermal — and shows you the actual stacking math to claim every dollar you qualify for. We update against IRS guidance, state energy office portals, and utility rebate program documents.</p>
+
+    <h2 class="text-2xl font-display mb-3">The four-layer stack</h2>
+    <ol class="space-y-4 mb-10">
+      <li class="card"><span class="font-semibold">1. Federal tax credits</span> (25C, 25D, 30C, 30D, 25E, 45L) — claimed on your tax return at filing. Most cover 30% of cost up to a cap.</li>
+      <li class="card"><span class="font-semibold">2. IRA rebates</span> (HEEHRA, HOMES) — point-of-sale rebates administered by state energy offices. Income-qualified.</li>
+      <li class="card"><span class="font-semibold">3. State programs</span> — state-specific tax credits (NY, AZ, others), upfront rebates (NY-Sun, SGIP), or sales/property tax exemptions.</li>
+      <li class="card"><span class="font-semibold">4. Utility programs</span> — local utility rebates (PG&E, ConEd, Duke, etc.) and time-of-use rate plans that compound savings.</li>
+    </ol>
+
+    <h2 class="text-2xl font-display mb-3">The order of operations</h2>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-3">Most installers (and most articles) get this wrong. Here is the exact order:</p>
+    <ol class="space-y-2 mb-10 list-decimal list-inside text-[var(--color-ink)]/85">
+      <li>Subtract utility rebates from total cost.</li>
+      <li>Subtract state cash rebates from remaining cost.</li>
+      <li>Calculate state tax credits on full pre-rebate cost (most states).</li>
+      <li>Calculate federal tax credits on the net cost (post-rebate).</li>
+      <li>Apply credits against tax owed in their respective filings.</li>
+    </ol>
+
+    <h2 class="text-2xl font-display mb-3">Why we built this</h2>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-3">DSIRE has the comprehensive database but treats every program equally — newer homeowners do not know that a $2,000 NYSERDA Clean Heat rebate beats a $1,000 utility heat pump rebate. The IRS publishes the credit forms but does not show you the stack. State energy offices document HEEHRA but do not explain the 25C interaction.</p>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-10">ClaimWatt sits in the middle: every program, ranked by total stacked value for your specific situation, with the math written out and the order of operations explicit.</p>
+
+    <h2 class="text-2xl font-display mb-3">How we stay current</h2>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-3">Federal credit rules update when the IRS issues guidance — we re-check Form 5695, Form 8936, and Form 8911 instructions quarterly. State programs change annually (most reset January). Utility programs change at varying cadence — we cross-check DSIRE with utility websites and update affected pages within two weeks of program changes.</p>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-10">Every page shows a "Last updated" date. If a number on this site is out of date, it is our error — email us and we will fix.</p>
+
+    <FAQ items={faq} />
+  </article>
+</Base>

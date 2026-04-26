@@ -1,0 +1,48 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { jsonLd, breadcrumbSchema, articleSchema } from '~/lib/schema';
+
+const title = 'Affiliate Disclosure & Editorial Independence — ClaimWatt';
+const description = 'How ClaimWatt makes money, our affiliate partner relationships, and editorial independence policy.';
+const url = '/disclosure/';
+const today = new Date().toISOString().slice(0, 10);
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Disclosure', url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Disclosure', url }]} />
+    <h1 class="text-4xl font-display mb-5">Affiliate disclosure</h1>
+
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      ClaimWatt participates in affiliate programs with installer-matching services and Amazon Associates. Some links on this site are affiliate links — clicking and completing a qualifying action (filling out an installer quote form, completing an Amazon purchase) may earn us a commission at no additional cost to you.
+    </p>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">Affiliate partners</h2>
+    <ul class="card list-disc list-inside space-y-2 text-[var(--color-ink)]/85">
+      <li><strong>Modernize</strong> — solar and heat pump installer matching</li>
+      <li><strong>EnergySage</strong> — solar marketplace and quote comparison</li>
+      <li><strong>Networx</strong> — heat pump and HVAC installer matching</li>
+      <li><strong>Amazon Associates</strong> — qualifying product purchases (chargers, batteries, accessories)</li>
+      <li><strong>Tesla referral program</strong> — discounts on new Tesla vehicle and energy purchases</li>
+    </ul>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">Editorial independence</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      Our rebate research, recommendations, and stacking math are independent of affiliate relationships. We do not promote partners over equally good non-partner alternatives. We disclose affiliate links inline (sponsored badges) and use rel="sponsored noopener" attributes per FTC guidance.
+    </p>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">Not tax advice</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      ClaimWatt is rebate research, not tax advice. Federal credit eligibility depends on your specific tax situation — confirm with a CPA or qualified tax professional before filing. Information on this site reflects our best understanding of current IRS guidance, state energy office program documents, and utility tariffs as of the page's "Last updated" date.
+    </p>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">FTC compliance</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed">
+      All affiliate links on ClaimWatt are clearly labeled with a "Sponsored" badge inline. Affiliate cards include the partner name and the basis of our compensation. This disclosure complies with FTC 16 CFR Part 255 endorsement and testimonial guidelines.
+    </p>
+  </article>
+</Base>

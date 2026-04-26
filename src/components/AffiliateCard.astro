@@ -1,0 +1,51 @@
+---
+export interface Props {
+  partner: 'modernize' | 'networx' | 'amazon' | 'tesla' | 'energysage';
+  tech: string;
+  state?: string;
+  variant?: 'inline' | 'sidebar';
+}
+const { partner, tech, state, variant = 'inline' } = Astro.props;
+
+const PARTNER_COPY: Record<string, { headline: string; sub: string; cta: string; note: string }> = {
+  modernize: {
+    headline: state ? `Get up to 4 free ${tech} quotes from vetted ${state} installers` : `Get up to 4 free ${tech} quotes from vetted local installers`,
+    sub: 'Modernize matches you with pre-screened pros. No obligation, takes 2 minutes.',
+    cta: 'Get free quotes',
+    note: 'Sponsored — Modernize partner referral',
+  },
+  networx: {
+    headline: state ? `Compare ${tech} installers in ${state}` : `Compare local ${tech} installers`,
+    sub: 'Networx connects you with up to 4 vetted local pros for free quotes.',
+    cta: 'Get free quotes',
+    note: 'Sponsored — Networx partner referral',
+  },
+  amazon: {
+    headline: `Top-rated ${tech} on Amazon`,
+    sub: 'Best-selling models that meet federal credit eligibility requirements.',
+    cta: 'Shop on Amazon',
+    note: 'Affiliate — As an Amazon Associate we earn from qualifying purchases.',
+  },
+  tesla: {
+    headline: 'Get $1,000 off a new Tesla',
+    sub: 'Tesla referral discount — applies to new Model 3, Y, S, X.',
+    cta: 'Use Tesla referral',
+    note: 'Affiliate — Tesla referral program',
+  },
+  energysage: {
+    headline: state ? `Compare solar quotes from ${state} installers on EnergySage` : 'Compare solar quotes on EnergySage',
+    sub: 'No-pressure marketplace. Pre-vetted installers compete for your project.',
+    cta: 'Compare quotes',
+    note: 'Affiliate — EnergySage partner program',
+  },
+};
+
+const c = PARTNER_COPY[partner];
+const href = '#'; // PLACEHOLDER — real partner links wired post-approval
+---
+<aside class={`card border-l-4 border-[var(--color-amber)] ${variant === 'sidebar' ? 'mb-6' : 'my-8'}`}>
+  <span class="inline-block text-[10px] uppercase tracking-wider text-[var(--color-amber)] font-semibold mb-1">{c.note}</span>
+  <h3 class="font-display text-lg leading-tight mb-1">{c.headline}</h3>
+  <p class="text-sm text-[var(--color-ink)]/70 mb-3">{c.sub}</p>
+  <a href={href} rel="sponsored noopener nofollow" target="_blank" class="btn btn-primary text-sm">{c.cta} →</a>
+</aside>

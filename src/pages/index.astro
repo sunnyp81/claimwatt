@@ -1,0 +1,109 @@
+---
+import Base from '~/layouts/Base.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { GUIDES } from '~/data/guides';
+import { jsonLd, organizationSchema, websiteSchema } from '~/lib/schema';
+
+const title = 'ClaimWatt: Every US Solar, Heat Pump & EV Rebate, Stacked';
+const description = 'Find every federal, state, county, city, and utility rebate, tax credit, and incentive — solar, heat pump, EV, battery, geothermal — and the math to stack them. Updated 2026.';
+
+const popular = ['california','texas','florida','new-york','arizona','massachusetts','colorado','new-jersey','pennsylvania','illinois','washington','oregon','virginia','north-carolina','michigan','minnesota']
+  .map((slug) => STATES.find((s) => s.slug === slug)!)
+  .filter(Boolean);
+
+const featuredGuides = GUIDES.slice(0, 6);
+
+const schemaOut = jsonLd(organizationSchema(), websiteSchema());
+---
+<Base title={title} description={description} schema={schemaOut} showStickyBar={true}>
+  <section class="bg-gradient-to-b from-[var(--color-mist)] to-[var(--color-paper)] border-b border-[var(--color-line)]">
+    <div class="max-w-6xl mx-auto px-4 lg:px-6 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-[var(--color-leaf-dark)] font-semibold mb-3">Updated for 2026 IRS rules</p>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-display leading-tight mb-5">
+          Every US energy rebate.<br/>
+          <span class="text-[var(--color-leaf-dark)]">Stacked, sourced, and explained.</span>
+        </h1>
+        <p class="text-lg text-[var(--color-ink)]/75 leading-relaxed mb-7 max-w-xl">
+          Federal credits, state rebates, utility programs — solar, heat pump, EV, battery, geothermal — with the actual math to claim every dollar you qualify for in 2026.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/find-rebates/" class="btn btn-primary">Find my rebates</a>
+          <a href="/federal/" class="btn btn-outline">Browse federal credits</a>
+        </div>
+      </div>
+      <div class="card bg-white p-6">
+        <h2 class="font-display text-xl mb-4">Top 2026 federal credits</h2>
+        <ul class="divide-y divide-[var(--color-line)]">
+          {FEDERAL.filter((f) => ['25C','25D','30D','HEEHRA'].includes(f.code)).map((f) => (
+            <li class="py-3">
+              <a href={`/federal/${f.slug}/`} class="flex items-baseline justify-between gap-3 hover:text-[var(--color-leaf-dark)]">
+                <div>
+                  <span class="font-mono text-xs bg-[var(--color-mist)] text-[var(--color-leaf-dark)] px-1.5 py-0.5 rounded mr-2">{f.code}</span>
+                  <span class="font-medium">{f.shortName}</span>
+                </div>
+                <span class="text-sm text-[var(--color-ink)]/70 whitespace-nowrap">{f.amount}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 lg:px-6 py-16">
+    <h2 class="text-3xl font-display mb-3">Find rebates by what you are buying</h2>
+    <p class="text-[var(--color-ink)]/70 mb-8 max-w-3xl">Every technology has its own federal credit, IRA rebate path, and state stack. Pick what you are installing — see the full eligibility map and current dollar amounts.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      {TECH.map((t) => (
+        <a href={`/technology/${t.slug}/`} class="card hover:border-[var(--color-leaf)] hover:bg-[var(--color-mist)] transition group">
+          <h3 class="font-display text-lg mb-2 group-hover:text-[var(--color-leaf-dark)]">{t.name}</h3>
+          <p class="text-sm text-[var(--color-ink)]/70 mb-3">{t.federalAmount}</p>
+          <span class="text-xs text-[var(--color-leaf-dark)] font-medium">View {t.shortName} stack →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-[var(--color-mist)]/40 border-y border-[var(--color-line)]">
+    <div class="max-w-6xl mx-auto px-4 lg:px-6 py-16">
+      <h2 class="text-3xl font-display mb-3">Find rebates by state</h2>
+      <p class="text-[var(--color-ink)]/70 mb-8 max-w-3xl">Each state has its own credit + utility rebate stack. We map all 50.</p>
+      <div class="grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+        {popular.map((s) => (
+          <a href={`/state/${s.slug}/`} class="card py-3 px-4 text-sm hover:border-[var(--color-leaf)] hover:bg-white transition">
+            <span class="font-medium block">{s.name}</span>
+            <span class="text-xs text-[var(--color-ink)]/60">{s.topProgram}</span>
+          </a>
+        ))}
+      </div>
+      <div class="mt-6">
+        <a href="/state/" class="text-[var(--color-leaf-dark)] hover:underline font-medium">View all 50 states →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 lg:px-6 py-16">
+    <h2 class="text-3xl font-display mb-3">Guides for the questions tax software does not answer</h2>
+    <p class="text-[var(--color-ink)]/70 mb-8 max-w-3xl">How credits stack, when they expire, what to ask your installer, what AMT does to your refund. Independent and current.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {featuredGuides.map((g) => (
+        <a href={`/guide/${g.slug}/`} class="card hover:border-[var(--color-leaf)] block transition">
+          <span class="text-xs uppercase tracking-wider text-[var(--color-leaf-dark)] font-semibold mb-1 block">{g.category}</span>
+          <h3 class="font-display text-lg leading-tight mb-2">{g.title}</h3>
+          <p class="text-sm text-[var(--color-ink)]/70 leading-snug">{g.description}</p>
+        </a>
+      ))}
+    </div>
+    <div class="mt-6">
+      <a href="/guide/" class="text-[var(--color-leaf-dark)] hover:underline font-medium">All guides →</a>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 lg:px-6 pb-16">
+    <EmailCapture />
+  </section>
+</Base>

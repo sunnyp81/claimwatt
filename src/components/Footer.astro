@@ -1,0 +1,61 @@
+---
+import { TECH } from '~/data/tech';
+import { STATES } from '~/data/states';
+import { FEDERAL } from '~/data/federal';
+
+export interface Props { lastUpdated?: string }
+const { lastUpdated } = Astro.props;
+
+const popularStates = ['california','texas','florida','new-york','arizona','massachusetts','colorado','new-jersey','pennsylvania','illinois']
+  .map((slug) => STATES.find((s) => s.slug === slug)!)
+  .filter(Boolean);
+
+const topFederal = FEDERAL.filter((f) => ['25C','25D','30D','HEEHRA'].includes(f.code));
+
+const today = new Date().toISOString().slice(0, 10);
+---
+<footer class="bg-[var(--color-ink)] text-white/90 mt-24">
+  <div class="max-w-6xl mx-auto px-4 lg:px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+    <div>
+      <h3 class="font-display text-base mb-3 text-white">By technology</h3>
+      <ul class="space-y-2">
+        {TECH.map((t) => (
+          <li><a class="hover:text-white" href={`/technology/${t.slug}/`}>{t.name}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-display text-base mb-3 text-white">Federal credits</h3>
+      <ul class="space-y-2">
+        {topFederal.map((f) => (
+          <li><a class="hover:text-white" href={`/federal/${f.slug}/`}>{f.code}: {f.shortName}</a></li>
+        ))}
+        <li><a class="hover:text-white" href="/federal/">All federal credits</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-display text-base mb-3 text-white">Popular states</h3>
+      <ul class="space-y-2">
+        {popularStates.map((s) => (
+          <li><a class="hover:text-white" href={`/state/${s.slug}/`}>{s.name}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-display text-base mb-3 text-white">ClaimWatt</h3>
+      <ul class="space-y-2">
+        <li><a class="hover:text-white" href="/how-it-works/">How it works</a></li>
+        <li><a class="hover:text-white" href="/guide/">All guides</a></li>
+        <li><a class="hover:text-white" href="/glossary/">Glossary</a></li>
+        <li><a class="hover:text-white" href="/about/">About</a></li>
+        <li><a class="hover:text-white" href="/disclosure/">Affiliate disclosure</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 lg:px-6 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-white/60">
+      <p>© {new Date().getFullYear()} ClaimWatt. Independent rebate research. Not affiliated with any government agency.</p>
+      <p>{lastUpdated ? `Page last updated: ${lastUpdated}` : `Site updated: ${today}`}</p>
+    </div>
+  </div>
+</footer>

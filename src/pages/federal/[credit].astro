@@ -1,0 +1,96 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import HowTo from '~/components/HowTo.astro';
+import FAQ from '~/components/FAQ.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { FEDERAL } from '~/data/federal';
+import { TECH } from '~/data/tech';
+import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, howToSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return FEDERAL.map((f) => ({
+    params: { credit: f.slug },
+    props: { credit: f },
+  }));
+}
+
+const { credit } = Astro.props;
+const url = `/federal/${credit.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const title = `${credit.code} ${credit.name} (2026): ${credit.amount}`;
+const metaTitle = title.length > 60 ? `${credit.code} ${credit.shortName} 2026: ${credit.amount}` : title;
+const description = `${credit.introAnswer.slice(0, 155)}…`;
+
+const linkedTechs = credit.techSlugs.map((s) => TECH.find((t) => t.slug === s)!).filter(Boolean);
+const otherFederal = FEDERAL.filter((f) => f.slug !== credit.slug).slice(0, 4);
+
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Federal', url: '/federal/' }, { name: credit.shortName, url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+  howToSchema({ name: `How to claim ${credit.code} ${credit.shortName}`, steps: credit.howToClaim }),
+  faqSchema(credit.faq),
+);
+
+const relatedItems = [
+  ...linkedTechs.map((t) => ({ name: `${t.name} rebates by state`, url: `/technology/${t.slug}/`, meta: t.federalAmount })),
+  ...otherFederal.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount })),
+];
+---
+<Base title={metaTitle} description={description} schema={schema} lastUpdated={today}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={[
+      { name: 'Home', url: '/' },
+      { name: 'Federal', url: '/federal/' },
+      { name: credit.shortName, url },
+    ]} />
+
+    <div class="flex items-center gap-2 mb-3">
+      <span class="font-mono text-xs bg-[var(--color-mist)] text-[var(--color-leaf-dark)] px-2 py-1 rounded font-semibold">{credit.code}</span>
+      <span class="text-xs text-[var(--color-ink)]/60">{credit.status}</span>
+      <span class="text-xs text-[var(--color-ink)]/60">·</span>
+      <span class="text-xs text-[var(--color-ink)]/60">{credit.formNumber}</span>
+    </div>
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-4">{credit.name} (2026)</h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed">{credit.introAnswer}</p>
+
+    <TLDR points={credit.tldr} updated={today} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">What this credit covers</h2>
+    <p class="text-[var(--color-ink)]/80 leading-relaxed mb-3">{credit.amountDetail}</p>
+    <ul class="card list-disc list-inside space-y-1 text-[var(--color-ink)]/85">
+      {credit.appliesTo.map((item) => (<li>{item}</li>))}
+    </ul>
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Eligibility quick check</h2>
+    <div class="space-y-3">
+      {credit.eligibility.map((e) => (
+        <div class="card">
+          <p class="font-medium mb-1">{e.q}</p>
+          <p class="text-[var(--color-ink)]/80 leading-relaxed">{e.a}</p>
+        </div>
+      ))}
+    </div>
+
+    <HowTo steps={credit.howToClaim} heading={`How to claim ${credit.code} on your tax return`} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Stacking with state and utility programs</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">{credit.stackingNotes}</p>
+    {credit.phasedownSchedule && (
+      <div class="card border-l-4 border-[var(--color-amber)]">
+        <p class="font-medium mb-1">Phasedown schedule</p>
+        <p class="text-[var(--color-ink)]/80">{credit.phasedownSchedule}</p>
+      </div>
+    )}
+
+    <FAQ items={credit.faq} />
+
+    <EmailCapture />
+
+    <RelatedLinks heading="Related" items={relatedItems} />
+  </article>
+</Base>

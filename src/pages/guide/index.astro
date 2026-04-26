@@ -1,0 +1,41 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { GUIDES } from '~/data/guides';
+import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
+
+const title = '2026 Energy Rebate Guides: Federal, State, Stacking, Eligibility';
+const description = 'Independent guides to every federal energy credit, state rebate stack, and the questions tax software does not answer. Updated for 2026 rules.';
+const url = '/guide/';
+const today = new Date().toISOString().slice(0, 10);
+
+const categories = ['Federal', 'Stacking', 'Eligibility', 'Technology', 'Process'] as const;
+const grouped = categories.map((c) => ({ category: c, guides: GUIDES.filter((g) => g.category === c) }));
+
+const items = GUIDES.map((g) => ({ name: g.title, url: `/guide/${g.slug}/` }));
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Guides', url }]),
+  collectionPageSchema({ url, name: 'ClaimWatt Guides', description, items }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Guides', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebate guides</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-12 max-w-3xl">Independent guides to every federal credit, state rebate stack, and stacking interaction. Written for homeowners filing their own taxes — no marketing fluff.</p>
+
+    {grouped.map(({ category, guides }) => (
+      <section class="mb-10">
+        <h2 class="text-2xl font-display mb-4">{category}</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {guides.map((g) => (
+            <a href={`/guide/${g.slug}/`} class="card hover:border-[var(--color-leaf)] block transition">
+              <h3 class="font-display text-base mb-2 leading-tight">{g.title}</h3>
+              <p class="text-sm text-[var(--color-ink)]/70 leading-snug">{g.description.slice(0, 130)}…</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>

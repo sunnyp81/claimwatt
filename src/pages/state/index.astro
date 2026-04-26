@@ -1,0 +1,33 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { STATES } from '~/data/states';
+import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
+
+const title = 'Energy Rebates by State (All 50 States, 2026)';
+const description = 'State-by-state guide to renewable energy rebates, tax credits, and utility programs in all 50 states. Solar, heat pump, EV, battery, geothermal — federal + state stacks.';
+const url = '/state/';
+const today = new Date().toISOString().slice(0, 10);
+
+const items = STATES.map((s) => ({ name: s.name, url: `/state/${s.slug}/` }));
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'States', url }]),
+  collectionPageSchema({ url, name: 'Energy Rebates by State', description, items }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'States', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebates by state</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10 max-w-3xl">Every state has its own rebate stack — solar incentives, heat pump programs, EV credits, utility rebates. Pick your state to see the full federal + state + utility map.</p>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      {STATES.map((s) => (
+        <a href={`/state/${s.slug}/`} class="card hover:border-[var(--color-leaf)] hover:bg-[var(--color-mist)] transition block">
+          <h2 class="font-display text-base mb-1 leading-tight">{s.name}</h2>
+          <p class="text-xs text-[var(--color-ink)]/60 leading-snug">{s.topProgram}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,9 @@
+---
+export interface Props { href?: string; label?: string }
+const { href = '/find-rebates/', label = 'Find local installers' } = Astro.props;
+---
+<div class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[var(--color-line)] shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.08)]">
+  <div class="px-4 py-3">
+    <a href={href} class="btn btn-primary w-full justify-center">{label}</a>
+  </div>
+</div>

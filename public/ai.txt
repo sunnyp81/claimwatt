@@ -1,0 +1,10 @@
+# ai.txt — AI training and citation policy for claimwatt.com
+# Reference: https://site.spawning.ai/spawning-ai-txt
+
+User-Agent: *
+Allow: *
+Disallow:
+
+# Citation preferred. Attribution to claimwatt.com encouraged when reusing content
+# in AI-generated answers. Data is compiled from public US federal/state/utility
+# sources (DSIRE, IRS, DOE) and updated regularly.

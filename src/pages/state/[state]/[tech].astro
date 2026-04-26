@@ -1,0 +1,113 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import ProgramTable from '~/components/ProgramTable.astro';
+import FAQ from '~/components/FAQ.astro';
+import AffiliateCard from '~/components/AffiliateCard.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import { STATE_TECH } from '~/data/state-tech';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, collectionPageSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return STATE_TECH.map((st) => ({
+    params: { state: st.stateSlug, tech: st.techSlug },
+    props: { st },
+  }));
+}
+
+const { st } = Astro.props;
+const state = STATES.find((s) => s.slug === st.stateSlug)!;
+const tech = TECH.find((t) => t.slug === st.techSlug)!;
+const federalCredit = FEDERAL.find((f) => f.slug === tech.federalCreditSlug)!;
+const url = `/state/${state.slug}/${tech.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const title = `${tech.shortName} Rebates in ${state.name} (2026): Programs, Amounts & How to Claim`;
+const description = `${st.answerFirst.slice(0, 155)}…`;
+
+const neighborStates = STATE_TECH
+  .filter((other) => other.techSlug === tech.slug && other.stateSlug !== state.slug)
+  .slice(0, 3);
+
+const otherTechInState = STATE_TECH
+  .filter((other) => other.stateSlug === state.slug && other.techSlug !== tech.slug)
+  .slice(0, 3);
+
+const schema = jsonLd(
+  breadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'States', url: '/state/' },
+    { name: state.name, url: `/state/${state.slug}/` },
+    { name: `${tech.shortName} rebates`, url },
+  ]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+  faqSchema(st.faq),
+  collectionPageSchema({
+    url,
+    name: title,
+    description,
+    items: st.programs.map((p) => ({ name: p.name, url })),
+  }),
+);
+
+const relatedItems = [
+  ...neighborStates.map((n) => {
+    const ns = STATES.find((s) => s.slug === n.stateSlug)!;
+    return { name: `${ns.name} ${tech.shortName.toLowerCase()} rebates`, url: `/state/${n.stateSlug}/${n.techSlug}/`, meta: n.topProgram };
+  }),
+  ...otherTechInState.map((o) => {
+    const ot = TECH.find((t) => t.slug === o.techSlug)!;
+    return { name: `${state.name} ${ot.shortName.toLowerCase()} rebates`, url: `/state/${o.stateSlug}/${o.techSlug}/`, meta: o.topProgram };
+  }),
+];
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={[
+      { name: 'Home', url: '/' },
+      { name: 'States', url: '/state/' },
+      { name: state.name, url: `/state/${state.slug}/` },
+      { name: `${tech.shortName} rebates`, url },
+    ]} />
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-5">{tech.shortName} Rebates in {state.name} (2026)</h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-3">{st.answerFirst}</p>
+
+    <TLDR points={st.tldr} updated={today} />
+
+    <ProgramTable programs={st.programs.map((p) => ({ ...p, href: undefined }))} heading={`${state.name} ${tech.shortName.toLowerCase()} programs available`} />
+
+    <AffiliateCard partner={tech.primaryRebatePartner} tech={tech.shortName.toLowerCase()} state={state.name} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Eligibility quick check</h2>
+    <div class="space-y-3">
+      {st.eligibility.map((e) => (
+        <div class="card">
+          <p class="font-medium mb-1">{e.q}</p>
+          <p class="text-[var(--color-ink)]/80 leading-relaxed">{e.a}</p>
+        </div>
+      ))}
+    </div>
+
+    <h2 class="text-2xl font-display mt-10 mb-3">How to stack with the federal credit</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">
+      {state.name} programs combine with the federal {federalCredit.code} {federalCredit.shortName} ({federalCredit.amount}) — see the
+      <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a> for filing instructions and forms.
+    </p>
+    <div class="card border-l-4 border-[var(--color-leaf-dark)] bg-[var(--color-mist)]/50">
+      <p class="font-display font-semibold mb-1">Worked stacking example</p>
+      <p class="text-[var(--color-ink)]/85 leading-relaxed">{st.stackingExample}</p>
+    </div>
+
+    <FAQ items={st.faq} />
+
+    <EmailCapture />
+
+    <RelatedLinks heading={`Related ${tech.shortName.toLowerCase()} stacks and ${state.name} pages`} items={relatedItems} />
+  </article>
+</Base>

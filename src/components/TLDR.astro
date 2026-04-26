@@ -1,0 +1,15 @@
+---
+export interface Props { points: string[]; updated?: string }
+const { points, updated } = Astro.props;
+---
+<aside class="border-l-4 border-[var(--color-leaf-dark)] bg-[var(--color-mist)] p-5 rounded-r-lg my-8">
+  <div class="flex items-center justify-between gap-4 mb-2">
+    <h2 class="font-display font-semibold text-lg m-0">TL;DR</h2>
+    {updated && <span class="text-xs text-[var(--color-ink)]/60">Updated {updated}</span>}
+  </div>
+  <ul class="space-y-2">
+    {points.map((p) => (
+      <li class="flex gap-2 leading-snug"><span aria-hidden="true" class="text-[var(--color-leaf-dark)] font-bold">→</span><span>{p}</span></li>
+    ))}
+  </ul>
+</aside>

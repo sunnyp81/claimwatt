@@ -1,0 +1,72 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { STATES } from '~/data/states';
+import { TECH } from '~/data/tech';
+import { jsonLd, breadcrumbSchema } from '~/lib/schema';
+
+const title = 'Find Your Energy Rebates: ZIP + Technology Lookup (2026)';
+const description = 'Find every federal, state, and utility rebate you qualify for in 2026. Pick your state and technology — see the full stack ranked by total dollar value.';
+const url = '/find-rebates/';
+const today = new Date().toISOString().slice(0, 10);
+
+const schema = jsonLd(breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Find rebates', url }]));
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <div class="max-w-3xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Find rebates', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Find your energy rebates</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-8 max-w-3xl">Pick your state and technology — we map the full federal + state + utility stack with current dollar amounts.</p>
+
+    <div class="card p-6 mb-10">
+      <form class="grid md:grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-sm font-medium block mb-1">Your state</span>
+          <select id="state-select" class="w-full px-4 py-2 border border-[var(--color-line)] rounded-lg bg-white">
+            <option value="">Select state</option>
+            {STATES.map((s) => (<option value={s.slug}>{s.name}</option>))}
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium block mb-1">Technology</span>
+          <select id="tech-select" class="w-full px-4 py-2 border border-[var(--color-line)] rounded-lg bg-white">
+            <option value="">Select technology</option>
+            {TECH.map((t) => (<option value={t.slug}>{t.name}</option>))}
+          </select>
+        </label>
+        <button type="button" id="go-btn" class="btn btn-primary col-span-full">Show my rebates</button>
+      </form>
+    </div>
+
+    <h2 class="text-2xl font-display mb-3">While you decide, browse</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <a href="/federal/" class="card hover:border-[var(--color-leaf)] block transition">
+        <h3 class="font-display text-lg mb-1">Federal credits</h3>
+        <p class="text-sm text-[var(--color-ink)]/70">25C, 25D, 30C, 30D, HEEHRA, HOMES, 25E, 45L</p>
+      </a>
+      <a href="/technology/" class="card hover:border-[var(--color-leaf)] block transition">
+        <h3 class="font-display text-lg mb-1">By technology</h3>
+        <p class="text-sm text-[var(--color-ink)]/70">Solar, heat pump, EV, battery, geothermal</p>
+      </a>
+    </div>
+
+    <EmailCapture />
+
+    <script is:inline>
+      document.getElementById('go-btn')?.addEventListener('click', () => {
+        const stateEl = document.getElementById('state-select');
+        const techEl = document.getElementById('tech-select');
+        const state = stateEl && 'value' in stateEl ? stateEl.value : '';
+        const tech = techEl && 'value' in techEl ? techEl.value : '';
+        if (state && tech) {
+          window.location.href = `/state/${state}/${tech}/`;
+        } else if (state) {
+          window.location.href = `/state/${state}/`;
+        } else if (tech) {
+          window.location.href = `/technology/${tech}/`;
+        }
+      });
+    </script>
+  </div>
+</Base>

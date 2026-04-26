@@ -1,0 +1,18 @@
+---
+export interface Props { items: { q: string; a: string }[]; heading?: string }
+const { items, heading = 'Frequently asked questions' } = Astro.props;
+---
+<section class="my-12">
+  <h2 class="text-2xl font-display mb-6">{heading}</h2>
+  <div class="space-y-3">
+    {items.map((it) => (
+      <details class="card group">
+        <summary class="cursor-pointer font-medium list-none flex items-start justify-between gap-4">
+          <span>{it.q}</span>
+          <span class="text-[var(--color-leaf-dark)] text-xl leading-none transition group-open:rotate-45">+</span>
+        </summary>
+        <div class="mt-3 text-[var(--color-ink)]/80 leading-relaxed">{it.a}</div>
+      </details>
+    ))}
+  </div>
+</section>

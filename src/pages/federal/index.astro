@@ -1,0 +1,42 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { FEDERAL } from '~/data/federal';
+import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
+
+const title = 'Federal Energy Tax Credits & IRA Rebates 2026: Complete Guide';
+const description = 'Every federal energy credit and IRA rebate for 2026 — 25C, 25D, 30C, 30D, 25E, HEEHRA, HOMES, 45L. Amounts, eligibility, and how to stack them with state programs.';
+const url = '/federal/';
+
+const items = FEDERAL.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/` }));
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Federal credits', url }]),
+  collectionPageSchema({ url, name: 'Federal Energy Credits 2026', description, items }),
+);
+
+const today = new Date().toISOString().slice(0, 10);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Federal credits', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Federal energy tax credits and IRA rebates (2026)</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10 max-w-3xl">
+      Eight federal pathways cover solar, heat pumps, EVs, batteries, geothermal, and electrification. Most run through 2032. Some are tax credits (claimed at filing); two are point-of-sale rebates (HEEHRA, HOMES). Each entry below is a deep guide.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-5">
+      {FEDERAL.map((f) => (
+        <a href={`/federal/${f.slug}/`} class="card hover:border-[var(--color-leaf)] block transition">
+          <div class="flex items-start gap-3 mb-2">
+            <span class="font-mono text-xs bg-[var(--color-mist)] text-[var(--color-leaf-dark)] px-2 py-1 rounded font-semibold">{f.code}</span>
+            <span class="text-xs text-[var(--color-ink)]/60">{f.status}</span>
+          </div>
+          <h2 class="font-display text-xl mb-1 leading-tight">{f.name}</h2>
+          <p class="text-sm text-[var(--color-leaf-dark)] font-semibold mb-2">{f.amount}</p>
+          <p class="text-sm text-[var(--color-ink)]/70 leading-relaxed">{f.amountDetail}</p>
+          <p class="text-xs text-[var(--color-ink)]/60 mt-2">Valid through {f.validThrough}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

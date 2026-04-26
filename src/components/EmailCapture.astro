@@ -1,0 +1,17 @@
+---
+export interface Props { variant?: 'inline' | 'sidebar' }
+const { variant = 'inline' } = Astro.props;
+---
+<aside class={`bg-[var(--color-mist)] border border-[var(--color-line)] rounded-xl p-6 ${variant === 'sidebar' ? 'mb-6' : 'my-12'}`}>
+  <h3 class="font-display text-xl mb-1">Free: Federal + State Stacker Checklist 2026</h3>
+  <p class="text-sm text-[var(--color-ink)]/70 mb-4">Step-by-step PDF showing exactly which credits and rebates stack — and which ones cancel each other out. No spam, unsubscribe anytime.</p>
+  <form method="POST" action="https://api.staticforms.xyz/submit" class="flex flex-col sm:flex-row gap-2">
+    <input type="hidden" name="accessKey" value="placeholder-staticforms-key" />
+    <input type="hidden" name="subject" value="ClaimWatt Stacker Checklist Request" />
+    <input type="hidden" name="redirectTo" value="https://claimwatt.com/thanks/" />
+    <input type="email" name="email" required placeholder="you@email.com"
+      class="flex-1 px-4 py-2 border border-[var(--color-line)] rounded-lg bg-white" />
+    <button type="submit" class="btn btn-primary whitespace-nowrap">Send the checklist</button>
+  </form>
+  <p class="text-xs text-[var(--color-ink)]/50 mt-2">By signing up you agree to occasional rebate alerts and our affiliate disclosure.</p>
+</aside>

@@ -1,0 +1,46 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { jsonLd, breadcrumbSchema, articleSchema } from '~/lib/schema';
+
+const title = 'About ClaimWatt: Independent US Energy Rebate Research';
+const description = 'ClaimWatt is independent rebate research — every federal credit, state program, and utility rebate mapped, with the actual stacking math. We are not a government agency or installer.';
+const url = '/about/';
+const today = new Date().toISOString().slice(0, 10);
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'About', url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'About', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-5">About ClaimWatt</h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      ClaimWatt is an independent rebate research site for US homeowners researching renewable energy incentives — solar, heat pumps, EVs, batteries, geothermal. We map every federal IRS credit, state energy office rebate, and utility program, with the actual stacking math.
+    </p>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      We are not a government agency. We are not an installer. We do not sell solar systems, heat pumps, EVs, or any energy product. Some pages link to installer partner programs (Modernize, EnergySage, Networx) that pay us a referral fee — these affiliate relationships are clearly labeled and only appear where they add value to the reader. Our editorial coverage is independent.
+    </p>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">How we maintain accuracy</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">
+      Federal credit rules update when the IRS issues guidance — we re-check Form 5695, Form 8936, and Form 8911 instructions quarterly. State programs change annually (most reset January). Utility programs change at varying cadence — we cross-check DSIRE with utility websites and update affected pages within two weeks of program changes.
+    </p>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-6">
+      Every page shows a "Last updated" date. If a number on this site is out of date, it is our error — email us and we will fix.
+    </p>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">What we do not do</h2>
+    <ul class="card list-disc list-inside space-y-2 text-[var(--color-ink)]/85">
+      <li>We do not provide tax advice. Confirm with a CPA or tax professional before filing energy credits.</li>
+      <li>We do not promise specific dollar amounts or eligibility for any individual filer — rebate programs change and your circumstances determine eligibility.</li>
+      <li>We do not collect personal information beyond email opt-ins. See our affiliate disclosure for partner relationships.</li>
+    </ul>
+
+    <h2 class="text-2xl font-display mb-3 mt-10">Contact</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed">
+      Found an error or want a program added? <a href="mailto:hello@claimwatt.com" class="text-[var(--color-leaf-dark)] underline">hello@claimwatt.com</a>.
+    </p>
+  </article>
+</Base>

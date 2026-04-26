@@ -1,0 +1,51 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { STATE_TECH } from '~/data/state-tech';
+import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
+
+const title = 'US Energy Rebate Programs: Federal, State, Utility Directory';
+const description = 'Browse the full directory of US renewable energy rebate programs — federal IRA programs, state energy office rebates, and utility programs by region.';
+const url = '/program/';
+const today = new Date().toISOString().slice(0, 10);
+
+const allPrograms = STATE_TECH.flatMap((st) => st.programs.map((p) => ({ ...p, stateSlug: st.stateSlug, techSlug: st.techSlug })));
+const grouped = new Map<string, typeof allPrograms>();
+for (const p of allPrograms) {
+  const key = p.authority;
+  if (!grouped.has(key)) grouped.set(key, []);
+  grouped.get(key)!.push(p);
+}
+
+const items = Array.from(grouped.keys()).map((authority) => ({ name: authority, url }));
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Programs', url }]),
+  collectionPageSchema({ url, name: 'Rebate Program Directory', description, items }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today}>
+  <div class="max-w-5xl mx-auto px-4 lg:px-6 py-12">
+    <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Programs', url }]} />
+    <h1 class="text-4xl md:text-5xl font-display leading-tight mb-4">Energy rebate program directory</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-10 max-w-3xl">A growing directory of US energy rebate programs. We are mapping ~3,000 federal, state, and utility programs from DSIRE — currently showing curated programs for our top-12 state×tech combinations. Full DSIRE integration in Wave 3.</p>
+
+    <div class="space-y-6">
+      {Array.from(grouped.entries()).map(([authority, progs]) => (
+        <div class="card">
+          <h2 class="font-display text-lg mb-3">{authority}</h2>
+          <ul class="space-y-2 text-sm">
+            {progs.map((p) => (
+              <li class="flex items-start justify-between gap-3 border-b border-[var(--color-line)] last:border-0 pb-2 last:pb-0">
+                <a href={`/state/${p.stateSlug}/${p.techSlug}/`} class="hover:text-[var(--color-leaf-dark)] flex-1">
+                  <span class="font-medium block">{p.name}</span>
+                  <span class="text-xs text-[var(--color-ink)]/60">{p.type} · {p.expiry || 'Ongoing'}</span>
+                </a>
+                <span class="text-sm font-semibold text-[var(--color-leaf-dark)] whitespace-nowrap">{p.amount}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</Base>

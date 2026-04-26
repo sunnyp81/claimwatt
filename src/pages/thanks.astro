@@ -1,0 +1,13 @@
+---
+import Base from '~/layouts/Base.astro';
+
+const title = 'Thanks — Check your inbox for the Stacker Checklist';
+const description = 'Thanks for signing up. Check your inbox for the 2026 Federal + State Stacker Checklist PDF.';
+---
+<Base title={title} description={description} noindex={true}>
+  <div class="max-w-2xl mx-auto px-4 lg:px-6 py-24 text-center">
+    <h1 class="text-4xl font-display mb-4">Thanks. Check your inbox.</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-8">The 2026 Federal + State Stacker Checklist is on its way. While you wait, browse the federal credit guides:</p>
+    <a href="/federal/" class="btn btn-primary">Browse federal credits</a>
+  </div>
+</Base>

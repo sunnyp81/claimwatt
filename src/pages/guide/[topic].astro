@@ -1,0 +1,68 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import FAQ from '~/components/FAQ.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { GUIDES } from '~/data/guides';
+import { TECH } from '~/data/tech';
+import { FEDERAL } from '~/data/federal';
+import { jsonLd, breadcrumbSchema, articleSchema, faqSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return GUIDES.map((g) => ({ params: { topic: g.slug }, props: { guide: g } }));
+}
+
+const { guide } = Astro.props;
+const url = `/guide/${guide.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const description = `${guide.answerFirst.slice(0, 155)}…`;
+
+const relatedTech = (guide.techSlugs || []).map((s) => TECH.find((t) => t.slug === s)!).filter(Boolean);
+const relatedFederal = (guide.federalSlugs || []).map((s) => FEDERAL.find((f) => f.slug === s)!).filter(Boolean);
+const relatedGuides = GUIDES.filter((g) => g.slug !== guide.slug && g.category === guide.category).slice(0, 3);
+
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Guides', url: '/guide/' }, { name: guide.title, url }]),
+  articleSchema({ url, headline: guide.title, description, datePublished: '2026-01-15', dateModified: today }),
+  faqSchema(guide.faq),
+);
+
+const relatedItems = [
+  ...relatedFederal.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount })),
+  ...relatedTech.map((t) => ({ name: `${t.name} rebates`, url: `/technology/${t.slug}/`, meta: t.federalAmount })),
+  ...relatedGuides.map((g) => ({ name: g.title, url: `/guide/${g.slug}/`, meta: g.category })),
+];
+---
+<Base title={guide.metaTitle} description={description} schema={schema} lastUpdated={today}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={[
+      { name: 'Home', url: '/' },
+      { name: 'Guides', url: '/guide/' },
+      { name: guide.title, url },
+    ]} />
+
+    <span class="text-xs uppercase tracking-wider text-[var(--color-leaf-dark)] font-semibold">{guide.category}</span>
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mt-1 mb-5">{guide.title}</h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed">{guide.answerFirst}</p>
+
+    <TLDR points={guide.tldr} updated={today} />
+
+    <div class="prose-cw">
+      {guide.sections.map((s) => (
+        <section class="my-8">
+          <h2 class="text-2xl font-display mb-3">{s.heading}</h2>
+          <p class="text-[var(--color-ink)]/85 leading-relaxed">{s.body}</p>
+        </section>
+      ))}
+    </div>
+
+    <FAQ items={guide.faq} />
+
+    <EmailCapture />
+
+    <RelatedLinks heading="Related" items={relatedItems} />
+  </article>
+</Base>

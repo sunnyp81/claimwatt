@@ -1,0 +1,88 @@
+---
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TLDR from '~/components/TLDR.astro';
+import AffiliateCard from '~/components/AffiliateCard.astro';
+import RelatedLinks from '~/components/RelatedLinks.astro';
+import EmailCapture from '~/components/EmailCapture.astro';
+import { TECH } from '~/data/tech';
+import { STATES } from '~/data/states';
+import { FEDERAL } from '~/data/federal';
+import { STATE_TECH } from '~/data/state-tech';
+import { jsonLd, breadcrumbSchema, articleSchema, collectionPageSchema } from '~/lib/schema';
+
+export function getStaticPaths() {
+  return TECH.map((t) => ({ params: { tech: t.slug }, props: { tech: t } }));
+}
+
+const { tech } = Astro.props;
+const url = `/technology/${tech.slug}/`;
+const today = new Date().toISOString().slice(0, 10);
+
+const title = `${tech.name} Rebates 2026: Federal + State Complete Stack`;
+const description = `${tech.description.slice(0, 155)}…`;
+
+const federalCredit = FEDERAL.find((f) => f.slug === tech.federalCreditSlug)!;
+const stateTechPages = STATE_TECH.filter((st) => st.techSlug === tech.slug);
+
+const allStateLinks = STATES.map((s) => {
+  const deep = stateTechPages.find((st) => st.stateSlug === s.slug);
+  return {
+    name: `${s.name} ${tech.shortName.toLowerCase()} rebates`,
+    url: deep ? `/state/${s.slug}/${tech.slug}/` : `/state/${s.slug}/`,
+    meta: deep ? deep.topProgram : s.topProgram,
+  };
+});
+
+const schema = jsonLd(
+  breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Technologies', url: '/technology/' }, { name: tech.name, url }]),
+  articleSchema({ url, headline: title, description, datePublished: '2026-01-15', dateModified: today }),
+  collectionPageSchema({ url, name: title, description, items: allStateLinks.slice(0, 50) }),
+);
+---
+<Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true}>
+  <article class="max-w-3xl mx-auto px-4 lg:px-6 py-10">
+    <Breadcrumbs items={[
+      { name: 'Home', url: '/' },
+      { name: 'Technologies', url: '/technology/' },
+      { name: tech.name, url },
+    ]} />
+
+    <h1 class="text-3xl md:text-4xl font-display leading-tight mb-4">{tech.name} Rebates 2026</h1>
+    <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-3">{tech.description}</p>
+
+    <TLDR points={[
+      `Federal: ${federalCredit.code} ${federalCredit.shortName} — ${federalCredit.amount}`,
+      `Average project cost: ${tech.averageProjectCost}`,
+      `Average stacked savings: ${tech.averageSavings}`,
+    ]} updated={today} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Federal pathway</h2>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">The federal {federalCredit.code} {federalCredit.shortName} pays {federalCredit.amount} on qualifying {tech.pluralLower} installations. Full eligibility, forms, and step-by-step claim instructions on the <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a>.</p>
+
+    <h2 class="text-2xl font-display mt-10 mb-3">Top state stacks</h2>
+    <ul class="card list-disc list-inside space-y-2 text-[var(--color-ink)]/85">
+      {tech.topRebateExamples.map((ex) => (<li>{ex}</li>))}
+    </ul>
+
+    <AffiliateCard partner={tech.primaryRebatePartner} tech={tech.shortName.toLowerCase()} />
+
+    <h2 class="text-2xl font-display mt-10 mb-3">{tech.name} rebates by state</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+      {allStateLinks.map((s) => (
+        <a href={s.url} class="card py-2 px-3 hover:border-[var(--color-leaf)] hover:bg-[var(--color-mist)] transition block">
+          <span class="font-medium block leading-tight">{s.name.replace(` ${tech.shortName.toLowerCase()} rebates`, '')}</span>
+          <span class="text-xs text-[var(--color-ink)]/60 leading-snug">{s.meta}</span>
+        </a>
+      ))}
+    </div>
+
+    <EmailCapture />
+
+    <RelatedLinks heading="Related federal credits" items={
+      FEDERAL.filter((f) => f.techSlugs.includes(tech.slug)).map((f) => ({
+        name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount,
+      }))
+    } />
+  </article>
+</Base>
