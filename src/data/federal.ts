@@ -350,7 +350,7 @@ export const FEDERAL: FederalCredit[] = [
     transferable: false,
     pointOfSale: true,
     introAnswer:
-      'HOMES — the Home Owner Managing Energy Savings Rebate Program — is the second IRA home-energy rebate program. Where HEEHRA targets specific electric appliances, HOMES rewards whole-home performance. Modeled or measured energy savings of 20% or more unlock rebates up to $8,000 per household, doubled for households below 80% AMI. The program runs through state energy offices and pairs naturally with HEEHRA.',
+      'HOMES — the Home Owner Managing Energy Savings Rebate Program — is the second IRA home-energy rebate program. Where HEEHRA targets specific electric appliances, HOMES rewards whole-home performance. Modeled or measured energy savings of 20% or more qualify for rebates up to $8,000 per household, doubled for households below 80% AMI. The program runs through state energy offices and pairs naturally with HEEHRA.',
     tldr: [
       'Up to $8,000 for whole-home retrofits with modeled/measured 20%+ savings',
       '2x rebate for households below 80% AMI',

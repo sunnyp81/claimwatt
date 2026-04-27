@@ -357,7 +357,7 @@ export const STATE_TECH: StateTech[] = [
     topProgram: 'California Clean Vehicle Rebate Project (CVRP) — paused/restructured 2024',
     deadline: 'CVRP paused November 2023 — replaced by CVAP/CC4A successor programs in 2025+',
     answerFirst:
-      'California offers the largest stack of EV incentives in the country, but the landscape changed in 2024 when the Clean Vehicle Rebate Project (CVRP) was paused and replaced by income-targeted successor programs (Clean Vehicle Assistance Program, Clean Cars 4 All). The federal 30D credit ($7,500 transferable to dealer at point of sale) remains the largest single incentive. SCE, PG&E, and SDG&E all run home charger rebates ($300–$1,000) and EV TOU rate plans that cut overnight charging costs to $0.14–$0.27/kWh. HOV lane access (CAV decal) remains a meaningful daily-commuter perk in major metros.',
+      'California offers the largest stack of EV incentives in the country, but the program structure shifted in 2024 when the Clean Vehicle Rebate Project (CVRP) was paused and replaced by income-targeted successor programs (Clean Vehicle Assistance Program, Clean Cars 4 All). The federal 30D credit ($7,500 transferable to dealer at point of sale) remains the largest single incentive. SCE, PG&E, and SDG&E all run home charger rebates ($300–$1,000) and EV TOU rate plans that cut overnight charging costs to $0.14–$0.27/kWh. HOV lane access (CAV decal) remains a meaningful daily-commuter perk in major metros.',
     tldr: [
       'Federal 30D $7,500 point-of-sale (most significant)',
       'CVRP paused — CC4A and CVAP successor programs target income-qualified',

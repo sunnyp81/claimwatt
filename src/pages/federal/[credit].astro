@@ -22,7 +22,10 @@ const url = `/federal/${credit.slug}/`;
 const today = new Date().toISOString().slice(0, 10);
 
 const title = `${credit.code} ${credit.name} (2026): ${credit.amount}`;
-const metaTitle = title.length > 60 ? `${credit.code} ${credit.shortName} 2026: ${credit.amount}` : title;
+const shortNameHasCode = credit.shortName.startsWith(credit.code);
+const metaTitle = title.length > 60
+  ? (shortNameHasCode ? `${credit.shortName} 2026: ${credit.amount}` : `${credit.code} ${credit.shortName} 2026: ${credit.amount}`)
+  : title;
 const description = `${credit.introAnswer.slice(0, 155)}…`;
 
 const linkedTechs = credit.techSlugs.map((s) => TECH.find((t) => t.slug === s)!).filter(Boolean);

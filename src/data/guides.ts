@@ -185,7 +185,7 @@ export const GUIDES: Guide[] = [
       { heading: 'IRA HEEHRA Heat Pump Rebate', body: 'Up to $8,000 point-of-sale rebate for heat pumps under HEEHRA. Income-qualified: ≤80% AMI = 100% cost coverage; 80–150% AMI = 50% cost coverage. State energy office administered.' },
       { heading: 'Top State Heat Pump Programs', body: 'Mass Save (MA): up to $10,000 whole-home. NYSERDA Clean Heat (NY): $1,500–$5,000 per ton. Efficiency Maine: $8,000+ for cold-climate ASHP. Energy Trust of Oregon: $1,800. Mass Save also covers HPWH at $750 and ground-source at $4,500–$6,500.' },
       { heading: 'Equipment Requirements', body: 'Air-source heat pumps must meet highest CEE tier and be on NEEP Cold Climate ASHP list (for northern climates). HPWH must be ENERGY STAR. Ground-source must meet ENERGY STAR Geothermal specifications.' },
-      { heading: 'Sizing and Capacity Notes', body: 'Heat pump rebate is typically per-ton (12,000 BTU/hr cooling). A 3-ton whole-home unit qualifies for 3× the per-ton rebate. Whole-home full-displacement installs unlock higher tiers in MA and NY than partial-displacement.' },
+      { heading: 'Sizing and Capacity Notes', body: 'Heat pump rebate is typically per-ton (12,000 BTU/hr cooling). A 3-ton whole-home unit qualifies for 3× the per-ton rebate. Whole-home full-displacement installs qualify for higher tiers in MA and NY than partial-displacement.' },
     ],
     faq: [
       { q: '25C vs HEEHRA — which is better?', a: 'HEEHRA wins for income-qualified households (≤150% AMI) — up to $8,000 vs $2,000. 25C wins for higher-income because HEEHRA does not apply.' },
