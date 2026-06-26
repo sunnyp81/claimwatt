@@ -1,6 +1,7 @@
 ---
+import { affiliateHref, type Partner } from '~/data/affiliates';
 export interface Props {
-  partner: 'modernize' | 'networx' | 'amazon' | 'tesla' | 'energysage';
+  partner: Partner;
   tech: string;
   state?: string;
   variant?: 'inline' | 'sidebar';
@@ -41,7 +42,7 @@ const PARTNER_COPY: Record<string, { headline: string; sub: string; cta: string;
 };
 
 const c = PARTNER_COPY[partner];
-const href = '#'; // PLACEHOLDER — real partner links wired post-approval
+const href = affiliateHref(partner, tech); // resolves from src/data/affiliates.ts ('#' until enabled)
 ---
 <aside class={`card border-l-4 border-[var(--color-amber)] ${variant === 'sidebar' ? 'mb-6' : 'my-8'}`}>
   <span class="inline-block text-[10px] uppercase tracking-wider text-[var(--color-amber)] font-semibold mb-1">{c.note}</span>

@@ -1,13 +1,18 @@
 ---
 import Base from '~/layouts/Base.astro';
 
-const title = 'Thanks — Check your inbox for the Stacker Checklist';
-const description = 'Thanks for signing up. Check your inbox for the 2026 Federal + State Stacker Checklist PDF.';
+const title = 'Your Stacker Checklist is ready to download';
+const description = 'Download your free 2026 Federal + State Rebate Stacker Checklist PDF.';
 ---
 <Base title={title} description={description} noindex={true}>
   <div class="max-w-2xl mx-auto px-4 lg:px-6 py-24 text-center">
-    <h1 class="text-4xl font-display mb-4">Thanks. Check your inbox.</h1>
-    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-8">The 2026 Federal + State Stacker Checklist is on its way. While you wait, browse the federal credit guides:</p>
-    <a href="/federal/" class="btn btn-primary">Browse federal credits</a>
+    <h1 class="text-4xl font-display mb-4">You're in. Here's your checklist.</h1>
+    <p class="text-lg text-[var(--color-ink)]/80 leading-relaxed mb-8">Your free 2026 Federal + State Rebate Stacker Checklist is ready — download it below, then look up the exact rebates for your state.</p>
+    <a href="/stacker-checklist-2026.pdf" download class="btn btn-primary text-lg">↓ Download the checklist (PDF)</a>
+    <p class="text-sm text-[var(--color-ink)]/60 mt-4">Save it, print it, tick the boxes. While you're here:</p>
+    <div class="flex flex-wrap gap-3 justify-center mt-3">
+      <a href="/federal/" class="btn btn-outline">Browse federal credits</a>
+      <a href="/state/" class="btn btn-outline">Find your state's rebates</a>
+    </div>
   </div>
 </Base>
