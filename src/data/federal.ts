@@ -423,3 +423,9 @@ export const FEDERAL: FederalCredit[] = [
 export const FEDERAL_BY_SLUG: Record<string, FederalCredit> = Object.fromEntries(
   FEDERAL.map((f) => [f.slug, f])
 );
+
+// Display label that never doubles the code — most shortNames already start with it
+// (e.g. '30D New EV Credit'), so prepending code again gives '30D 30D New EV Credit'.
+export function creditLabel(f: { code: string; shortName: string }): string {
+  return f.shortName.startsWith(f.code) ? f.shortName : `${f.code} ${f.shortName}`;
+}

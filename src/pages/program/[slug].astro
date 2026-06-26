@@ -10,7 +10,7 @@ import AffiliateCard from '~/components/AffiliateCard.astro';
 import { PROGRAMS } from '~/data/programs';
 import { STATES } from '~/data/states';
 import { TECH } from '~/data/tech';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { jsonLd, breadcrumbSchema, articleSchema, governmentServiceSchema, faqSchema, howToSchema } from '~/lib/schema';
 
 export function getStaticPaths() {
@@ -67,7 +67,7 @@ const schema = jsonLd(
 const relatedItems = [
   ...(state ? [{ name: `${state.name} energy rebates`, url: `/state/${state.slug}/`, meta: state.topProgram }] : []),
   ...techs.map((t) => ({ name: `${t.name} rebates`, url: `/technology/${t.slug}/`, meta: t.federalAmount })),
-  ...(federal ? [{ name: `${federal.code}: ${federal.shortName}`, url: `/federal/${federal.slug}/`, meta: federal.amount }] : []),
+  ...(federal ? [{ name: creditLabel(federal), url: `/federal/${federal.slug}/`, meta: federal.amount }] : []),
   ...relatedPrograms.map((p) => ({ name: p.name, url: `/program/${p.slug}/`, meta: p.amount })),
 ];
 

@@ -10,7 +10,7 @@ import RelatedLinks from '~/components/RelatedLinks.astro';
 import { STATE_TECH } from '~/data/state-tech';
 import { STATES } from '~/data/states';
 import { TECH } from '~/data/tech';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { findProgramSlug } from '~/data/programs';
 import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, collectionPageSchema } from '~/lib/schema';
 
@@ -100,7 +100,7 @@ const relatedItems = [
 
     <h2 class="text-2xl font-display mt-10 mb-3">How to stack with the federal credit</h2>
     <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">
-      {state.name} programs combine with the federal {federalCredit.code} {federalCredit.shortName} ({federalCredit.amount}) — see the
+      {state.name} programs combine with the federal {creditLabel(federalCredit)} ({federalCredit.amount}) — see the
       <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a> for filing instructions and forms.
     </p>
     <div class="card border-l-4 border-[var(--color-leaf-dark)] bg-[var(--color-mist)]/50">

@@ -1,14 +1,14 @@
 ---
 import Base from '~/layouts/Base.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { jsonLd, breadcrumbSchema, collectionPageSchema } from '~/lib/schema';
 
 const title = 'Federal Energy Tax Credits & IRA Rebates 2026: Complete Guide';
 const description = 'Every federal energy credit and IRA rebate for 2026 — 25C, 25D, 30C, 30D, 25E, HEEHRA, HOMES, 45L. Amounts, eligibility, and how to stack them with state programs.';
 const url = '/federal/';
 
-const items = FEDERAL.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/` }));
+const items = FEDERAL.map((f) => ({ name: creditLabel(f), url: `/federal/${f.slug}/` }));
 const schema = jsonLd(
   breadcrumbSchema([{ name: 'Home', url: '/' }, { name: 'Federal credits', url }]),
   collectionPageSchema({ url, name: 'Federal Energy Credits 2026', description, items }),

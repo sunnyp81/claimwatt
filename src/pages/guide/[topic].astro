@@ -7,7 +7,7 @@ import RelatedLinks from '~/components/RelatedLinks.astro';
 import EmailCapture from '~/components/EmailCapture.astro';
 import { GUIDES } from '~/data/guides';
 import { TECH } from '~/data/tech';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { jsonLd, breadcrumbSchema, articleSchema, faqSchema } from '~/lib/schema';
 
 export function getStaticPaths() {
@@ -31,7 +31,7 @@ const schema = jsonLd(
 );
 
 const relatedItems = [
-  ...relatedFederal.map((f) => ({ name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount })),
+  ...relatedFederal.map((f) => ({ name: creditLabel(f), url: `/federal/${f.slug}/`, meta: f.amount })),
   ...relatedTech.map((t) => ({ name: `${t.name} rebates`, url: `/technology/${t.slug}/`, meta: t.federalAmount })),
   ...relatedGuides.map((g) => ({ name: g.title, url: `/guide/${g.slug}/`, meta: g.category })),
 ];

@@ -7,7 +7,7 @@ import RelatedLinks from '~/components/RelatedLinks.astro';
 import EmailCapture from '~/components/EmailCapture.astro';
 import { TECH } from '~/data/tech';
 import { STATES } from '~/data/states';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { STATE_TECH } from '~/data/state-tech';
 import { jsonLd, breadcrumbSchema, articleSchema, collectionPageSchema } from '~/lib/schema';
 
@@ -52,13 +52,13 @@ const schema = jsonLd(
     <p class="text-lg text-[var(--color-ink)]/85 leading-relaxed mb-3">{tech.description}</p>
 
     <TLDR points={[
-      `Federal: ${federalCredit.code} ${federalCredit.shortName} — ${federalCredit.amount}`,
+      `Federal: ${creditLabel(federalCredit)} — ${federalCredit.amount}`,
       `Average project cost: ${tech.averageProjectCost}`,
       `Average stacked savings: ${tech.averageSavings}`,
     ]} updated={today} />
 
     <h2 class="text-2xl font-display mt-10 mb-3">Federal pathway</h2>
-    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">The federal {federalCredit.code} {federalCredit.shortName} pays {federalCredit.amount} on qualifying {tech.pluralLower} installations. Full eligibility, forms, and step-by-step claim instructions on the <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a>.</p>
+    <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">The federal {creditLabel(federalCredit)} pays {federalCredit.amount.charAt(0).toLowerCase() + federalCredit.amount.slice(1)} on qualifying {tech.pluralLower} installations. Full eligibility, forms, and step-by-step claim instructions on the <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a>.</p>
 
     <h2 class="text-2xl font-display mt-10 mb-3">Top state stacks</h2>
     <ul class="card list-disc list-inside space-y-2 text-[var(--color-ink)]/85">
@@ -81,7 +81,7 @@ const schema = jsonLd(
 
     <RelatedLinks heading="Related federal credits" items={
       FEDERAL.filter((f) => f.techSlugs.includes(tech.slug)).map((f) => ({
-        name: `${f.code}: ${f.shortName}`, url: `/federal/${f.slug}/`, meta: f.amount,
+        name: creditLabel(f), url: `/federal/${f.slug}/`, meta: f.amount,
       }))
     } />
   </article>

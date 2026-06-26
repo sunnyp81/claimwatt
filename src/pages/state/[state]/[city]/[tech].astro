@@ -9,7 +9,7 @@ import RelatedLinks from '~/components/RelatedLinks.astro';
 import { CITY_TECH } from '~/data/cities';
 import { STATES } from '~/data/states';
 import { TECH } from '~/data/tech';
-import { FEDERAL } from '~/data/federal';
+import { FEDERAL, creditLabel } from '~/data/federal';
 import { STATE_TECH } from '~/data/state-tech';
 import { jsonLd, breadcrumbSchema, articleSchema, faqSchema, collectionPageSchema } from '~/lib/schema';
 
@@ -67,7 +67,7 @@ const relatedItems = [
     const ot = TECH.find((t) => t.slug === oc.techSlug)!;
     return { name: `${oc.cityName} ${ot.shortName.toLowerCase()}`, url: `/state/${oc.stateSlug}/${oc.citySlug}/${oc.techSlug}/`, meta: oc.utility };
   }),
-  { name: `${federalCredit.code}: ${federalCredit.shortName}`, url: `/federal/${federalCredit.slug}/`, meta: federalCredit.amount },
+  { name: creditLabel(federalCredit), url: `/federal/${federalCredit.slug}/`, meta: federalCredit.amount },
 ];
 ---
 <Base title={title} description={description} schema={schema} lastUpdated={today} showStickyBar={true} ogSlug={`state-${state.slug}-${ct.citySlug}-${tech.slug}`}>
@@ -101,7 +101,7 @@ const relatedItems = [
 
     <h2 class="text-2xl font-display mt-10 mb-3">Federal pathway</h2>
     <p class="text-[var(--color-ink)]/85 leading-relaxed mb-3">
-      The federal {federalCredit.code} {federalCredit.shortName} ({federalCredit.amount}) applies to {ct.cityName} {tech.shortName.toLowerCase()} installations regardless of city or state.
+      The federal {creditLabel(federalCredit)} ({federalCredit.amount}) applies to {ct.cityName} {tech.shortName.toLowerCase()} installations regardless of city or state.
       See the <a href={`/federal/${federalCredit.slug}/`} class="text-[var(--color-leaf-dark)] underline">{federalCredit.code} guide</a> for filing instructions and forms.
     </p>
 
